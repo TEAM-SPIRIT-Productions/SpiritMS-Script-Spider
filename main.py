@@ -49,15 +49,6 @@ def read_contents(file_path):
         spirit_logger.warning(
             f"      File is NOT UTF-8! Flagging file: {file_path}"
         )
-        file_contents = [
-                "[WARNING]",
-                "This file is not UTF-8 encoding.",
-                "This might be a sign that the encoding is broken,",
-                "or that the author had attempted to mix encoding via faulty",
-                "copy-paste actions.",
-                "This should not be the case for Swordie-based sources.",
-                "*PLEASE CHECK THROUGH ITS CONTENTS MANUALLY*",
-            ]
     if not file_contents:
         spirit_logger.warning(f"    Could not process: {file_path}")
     return file_contents
@@ -93,9 +84,6 @@ def process_file(keywords, file_contents):
     # Unparseable files:
     if not file_contents:  # empty files
         spirit_logger.debug("    Unparseable file without encoding errors skipped")
-        return output_list
-    if file_contents[0] == "[WARNING]":  # Handle files with broken encoding
-        output_list = file_contents
         return output_list
         
     # Parseable files:
