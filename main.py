@@ -88,7 +88,7 @@ def process_file(keywords, file_contents):
         
     # Parseable files:
     last_line_number = len(file_contents) - 1
-    count = 1  # number of search results
+    count = 0  # number of search results
     pointer = 0  # used to skip the for-loop forward
     for index, line in enumerate(file_contents):
         # Skip forward after finding a keyword found
@@ -97,21 +97,23 @@ def process_file(keywords, file_contents):
         
         # Check if there are non-ASCII characters
         if contains_keywords(keywords, line):
-            spirit_logger.debug("Match detected!")
-            spirit_logger.debug(f"Number of elements: {len(file_contents)}")
-            output_list.append("")
-            output_list.append(f"---------- Usage [{count}] at line {index}: ----------")
+            count += 1
+            # spirit_logger.debug("Match detected!")
+            # spirit_logger.debug(f"Number of elements: {len(file_contents)}")
+            output_list.append(f"\n---------- Block [{count}] at line {index}: ----------\n")
             output_list.append(line)
             offset = 1
             while True:  # copy all the lines after that, until an empty line
-                spirit_logger.debug(f"Line {index+offset}: {file_contents[index+offset]}")
-                
-                if (not file_contents[index+offset]) or (index + offset == last_line_number):
+                # spirit_logger.debug(f"Line {index+offset}: {file_contents[index+offset]}")
+                output_list.append(file_contents[index+offset])
+                if (file_contents[index+offset] == "\n") or (index + offset == last_line_number):
                     pointer = index + offset + 1
                     break
-                output_list.append(file_contents[index+offset])
                 offset += 1  # simulate a do-while
-    output_list.insert(0, f"Total usages found: {count}")
+    if count:
+        output_list.insert(0, f"Total code blocks found: {count}\n")
+        output_list.append("\n")
+        output_list.append("=================================================\n\n")
     spirit_logger.debug(f"    Processed contents: {output_list}")
     return output_list
 
@@ -175,8 +177,8 @@ for file_path, file_identifier in files.items():
     output_list = process_file(keyword, file_contents)
     if output_list:
         # if output_list is not empty
-        output_buffer.append(f"Usage found in: {file_identifier}")
+        output_buffer.append(f"Usage found in: {file_identifier}\n")
         output_buffer.extend(output_list)
-    spirit_logger.info(f"  Finished processing file: {file_identifier}")
+    spirit_logger.info(f"  Finished processing file: {file_identifier}\n")
 write_out(file_name, output_buffer)
 spirit_logger.info("Sequence completed!")
